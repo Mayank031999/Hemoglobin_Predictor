@@ -32,14 +32,14 @@ X = df.drop(columns='Haemoglobin (gm/dL)')
 y = df['Haemoglobin (gm/dL)']
 
 # X = np.array(X)
-y = to_categorical(y).astype(int)
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
+# y = to_categorical(y).astype(int)
+# X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2)
 
-model = Sequential()
+# model = Sequential()
 
-model.add(Dense(128, activation='relu', input_shape=(24,))) # Input layer with 784 features
-model.add(Dense(64, activation='relu')) # Hidden layer
-model.add(Dense(24, activation='softmax'))
+# model.add(Dense(128, activation='relu', input_shape=(24,))) # Input layer with 784 features
+# model.add(Dense(64, activation='relu')) # Hidden layer
+# model.add(Dense(24, activation='softmax'))
 
 reduce_lr = ReduceLROnPlateau(monitor='categorical_accuracy',
                               factor=0.1,
@@ -52,13 +52,22 @@ reduce_lr = ReduceLROnPlateau(monitor='categorical_accuracy',
   
 terminate_callback = EarlyStopping(monitor='categorical_accuracy', patience=50,mode='max')
 
-model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-model.fit(X_train, y_train, epochs=1000, batch_size=256,callbacks=[terminate_callback,reduce_lr])
-model.save('Intermediate Hemoglobin.h5')
+# model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+# model.fit(X_train, y_train, epochs=1000, batch_size=256,callbacks=[terminate_callback,reduce_lr])
+# model.save('Saved_Inter_Model\Intermediate Hemoglobin.h5')
 
-loss, accuracy = model.evaluate(X_test, y_test)
-print('Test accuracy:', accuracy)
+# loss, accuracy = model.evaluate(X_test, y_test)
+# print('Test accuracy:', accuracy)
 
-model = load_model('Intermediate Hemoglobin.h5')
-intermediateHgb = model.predict(X)
+model = load_model('Saved_Inter_Model\Intermediate Hemoglobin.h5')
+
+print(X)
+preds = model.predict(X)
+args = np.argmax(preds, axis=1).tolist()
+print(args)
+
+df['Intermediate Hgb'] = args
+df.to_excel('Saved_Inter_Model\With_inter.xlsx')
+
+
 
